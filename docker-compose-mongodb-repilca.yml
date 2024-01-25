@@ -1,0 +1,66 @@
+# openssl rand -base64 756 > replica.key
+# docker compose -f docker-compose-mongodb-repilca.yml up -d
+
+# run following command in container mongosh
+
+# rs.initiate({
+#   _id: 'mongo-repl',
+#   members: [
+#     {_id: 0, host: "mongodb-node-1"},
+#     {_id: 1, host: "mongodb-node-2"},
+#     {_id: 2, host: "mongodb-node-3"}
+#   ]
+# })
+
+# check replica set status 
+
+# rs.status()
+
+# --bind_ip https://stackoverflow.com/questions/47878922/mongodb-replica-set-initiate-failing-on-docker
+# can not use localhost nor directConnection=true, use dockerized app to connect
+
+services:
+  mongodb1:
+    container_name: mongodb-node-1
+    image: mongo:6.0.5
+    networks:
+      - mongodb-network
+    command: 
+      - bash 
+      - -c 
+      - |
+        chown 999:999 /data/replica.key
+        mongod --replSet mongo-repl --keyFile /data/replica.key --bind_ip mongodb-node-1,localhost
+    volumes:
+      - $PWD/replica.key:/data/replica.key
+
+  mongodb2:
+    container_name: mongodb-node-2
+    image: mongo:6.0.5
+    networks:
+      - mongodb-network
+    command: 
+      - bash 
+      - -c 
+      - |
+        chown 999:999 /data/replica.key
+        mongod --replSet mongo-repl --keyFile /data/replica.key --bind_ip mongodb-node-2,localhost
+    volumes:
+      - $PWD/replica.key:/data/replica.key
+
+  mongodb3:
+    container_name: mongodb-node-3
+    image: mongo:6.0.5
+    networks:
+      - mongodb-network
+    command: 
+      - bash 
+      - -c 
+      - |
+        chown 999:999 /data/replica.key
+        mongod --replSet mongo-repl --keyFile /data/replica.key --bind_ip mongodb-node-3,localhost
+    volumes:
+      - $PWD/replica.key:/data/replica.key
+
+networks:
+  mongodb-network:

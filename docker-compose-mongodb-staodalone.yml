@@ -1,0 +1,22 @@
+# docker compose -f docker-compose-mongodb-staodalone.yml up -d
+# 
+# rs.initiate()
+# db.createUser({user: 'rwuser',pwd: 'rwpwd',roles:[{role: 'readWrite',db: 'shopping_cart'}]});
+
+services:
+  mongodb4:
+    container_name: mongodb-node-4
+    ports:
+      - 27017:27017
+    image: mongo:6.0.5
+    networks:
+      - mongodb-network
+    command: 
+      - bash 
+      - -c 
+      - |
+        chown 999:999 /data/replica.key
+        mongod --replSet mongo-test --bind_ip mongodb-node-4,localhost
+
+networks:
+  mongodb-network:

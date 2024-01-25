@@ -1,0 +1,24 @@
+# ENV=dev.env IMAGE_URI=fastapi-sc-backend IMAGE_TAG=latest docker compose -f docker-compose-app.yml up -d
+
+services:
+  fastapi-sc-backend:
+    container_name: fastapi-sc-backend
+    image: ${IMAGE_URI}:${IMAGE_TAG}
+    ports:
+      - 8000:8000
+    networks:
+      - mongodb-network
+    volumes:
+      - ./logs:/wrokspace/logs
+    env_file:
+      - ${ENV}
+    healthcheck:
+      # test: ["CMD-SHELL", "curl -f http://localhost:8000/v1/health/ || exit 1"]
+      test: ["CMD", "sh", "-c", "curl -f http://localhost:8000/v1/health/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 1
+      start_period: 10s
+
+networks:
+  mongodb-network:

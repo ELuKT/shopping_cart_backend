@@ -1,0 +1,13 @@
+# docker compose -f docker-compose-redis.yml up -d
+
+services:
+  redis-standalone:
+    container_name: redis-standalone
+    image: redis:7.0.11-alpine
+    ports:
+      - 6379:6379
+    networks:
+      - mongodb-network
+
+networks:
+  mongodb-network:

@@ -1,0 +1,40 @@
+events {
+    worker_connections  1024;
+}
+
+http {
+
+  access_log  /var/log/nginx/access.log;
+  error_log  /var/log/nginx/error.log;
+
+  server {
+    listen 80;
+    server_name _;
+    location ~ ^/backend/(.*)$ {
+        resolver 127.0.0.11 valid=30s;
+        set $upstream http://localhost:8001/;
+        proxy_pass $upstream$1$is_args$args;
+        proxy_set_header Host $host;
+    }
+
+    location ~ ^/consul-server/(.*)$ {
+        resolver 127.0.0.11 valid=30s;
+        set $upstream http://{server_ip}:8500/consul-server/;
+        proxy_pass $upstream$1$is_args$args;
+        proxy_set_header Host $host;
+    }
+
+    location ~ ^/v1/(.*)$ {
+        resolver 127.0.0.11 valid=30s;
+        set $upstream http://{server_ip}:8500/v1/;
+        proxy_pass $upstream$1$is_args$args;
+        proxy_set_header Host $host;
+    }
+
+    # for aws ecs health check
+    location = /health {
+        add_header 'Content-Type' 'application/json';
+        return 200 '{"status":"UP"}';
+    }
+  }
+}

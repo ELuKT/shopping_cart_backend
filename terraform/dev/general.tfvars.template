@@ -1,0 +1,8 @@
+project_name = "fastapi-sc"
+aws_account = ""
+mongodbatlas_public_key=""
+mongodbatlas_private_key=""
+mongodbatlas_org_id=""
+mongodbatlas_database_username="rwuser"
+mongodbatlas_database_password="rwpwd"
+mongodbatlas_database_name="shopping_cart"
